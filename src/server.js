@@ -1,8 +1,13 @@
 const path = require('path')
+const http = require('http')
 const express = require('express')
+const socketio = require('socket.io')
+
 const hbs = require('hbs')
 
 const app = express()
+const server = http.createServer(app)
+const io = socketio(server)
 
 const publicDirectoryPath = path.join(__dirname, '../public')
 const viewsPath = path.join(__dirname, '../templates/views')
@@ -18,4 +23,8 @@ app.get('', (req, res) => {
     res.render('index')
 })
 
-module.exports = app
+io.on('connection', () => {
+    console.log('New WebSocket connection')
+})
+
+module.exports = server
