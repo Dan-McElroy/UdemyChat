@@ -34,6 +34,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         io.emit('message', 'A user has left!')
     })
+
+    socket.on('sendLocation', (latitude, longitude) => {
+        io.emit('message', `Location: ${longitude}, ${latitude}`)
+    })
 })
 
 module.exports = server
