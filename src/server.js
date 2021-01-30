@@ -23,16 +23,11 @@ app.get('', (req, res) => {
     res.render('index')
 })
 
-let count = 0
-
 io.on('connection', (socket) => {
-    console.log('New WebSocket connection')
+    socket.emit('message', 'Welcome!')
 
-    socket.emit('countUpdated', count)
-
-    socket.on('increment', () => {
-        count++
-        io.emit('countUpdated', count)
+    socket.on('sendMessage', (message) => {
+        io.emit('message', message)
     })
 })
 
