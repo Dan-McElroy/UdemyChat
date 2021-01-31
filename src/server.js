@@ -20,10 +20,6 @@ hbs.registerPartials(partialsPath)
 
 app.use(express.static(publicDirectoryPath))
 
-app.get('', (req, res) => {
-    res.render('index')
-})
-
 io.on('connection', (socket) => {
     socket.emit('message', 'Welcome!')
     socket.broadcast.emit('message', 'A new user has joined!')

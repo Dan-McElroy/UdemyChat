@@ -4,9 +4,14 @@ const $locationButton = document.querySelector('#send-location')
 const $messageForm = document.querySelector('#message-form')
 const $messageInput = document.querySelector('#message-form > input')
 const $messageButton = document.querySelector('#message-form > button')
+const $messages = document.querySelector('#messages')
+
+const messageTemplate = document.querySelector('#message-template').innerHTML
 
 socket.on('message', (message) => {
     console.log(message)
+    const html = Mustache.render(messageTemplate, { message })
+    $messages.insertAdjacentHTML('beforeend', html)
 })
 
 const disable = (element) => {
