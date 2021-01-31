@@ -1,17 +1,19 @@
 const socket = io()
 
-const $locationButton = document.querySelector('#send-location') 
+const $locationButton = document.querySelector('#send-location')
 const $messageForm = document.querySelector('#message-form')
 const $messageInput = document.querySelector('#message-form > input')
 const $messageButton = document.querySelector('#message-form > button')
 const $messages = document.querySelector('#messages')
+const $sidebar = document.querySelector('#sidebar')
 
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
-socket.on('message', ({username, text, createdAt}) => {
+socket.on('message', ({ username, text, createdAt }) => {
     const html = Mustache.render(messageTemplate, {
         username,
         message: text,
@@ -20,13 +22,17 @@ socket.on('message', ({username, text, createdAt}) => {
     $messages.insertAdjacentHTML('beforeend', html)
 })
 
-socket.on('locationMessage', ({username, url, createdAt}) => {
-    const html = Mustache.render(locationMessageTemplate, { 
+socket.on('locationMessage', ({ username, url, createdAt }) => {
+    const html = Mustache.render(locationMessageTemplate, {
         url,
         username,
         createdAt: formatTime(createdAt)
-     })
+    })
     $messages.insertAdjacentHTML('beforeend', html)
+})
+
+socket.on('roomData', ({ room, users }) => {
+    $sidebar.innerHTML = Mustache.render(sidebarTemplate, { room, users })
 })
 
 $messageForm.addEventListener('submit', e => {
@@ -49,7 +55,7 @@ $messageForm.addEventListener('submit', e => {
 
 $locationButton.addEventListener('click', () => {
     disableElement($locationButton)
-    
+
     if (!navigator.geolocation) {
         return alert('Geolocation is not supported by your browser.')
     }
