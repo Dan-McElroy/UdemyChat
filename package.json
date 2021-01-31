@@ -11,6 +11,7 @@
   "author": "Dan McElroy <daniel@mcelroys.net>",
   "license": "ISC",
   "dependencies": {
+    "bad-words": "^3.0.4",
     "express": "^4.17.1",
     "hbs": "^4.1.1",
     "socket.io": "^3.1.0"
