@@ -24,24 +24,32 @@ io.on('connection', (socket) => {
         } 
         socket.join(user.room)
 
-        socket.emit('message', generateMessage('Welcome!'))
-        socket.broadcast.to(user.room).emit('message', generateMessage(`${user.name} has joined!`))
+        socket.emit('message', generateMessage('Admin', 'Welcome!'))
+        socket.broadcast.to(user.room).emit('message', generateMessage('Admin', `${user.name} has joined!`))
 
         ack()
     })
 
     socket.on('sendMessage', (message, ack) => {
+        const user = getUser(socket.id)
+        if (!user) {
+            return ack('User could not be found!')
+        }
         const filter = new Filter()
 
         if (filter.isProfane(message)) {
             return ack('Message is profane!')
         }
-        io.emit('message', generateMessage(message))
+        io.to(user.room).emit('message', generateMessage(user.name, message))
         ack()
     })
 
     socket.on('sendLocation', (latitude, longitude, ack) => {
-        io.emit('locationMessage', generateLocationMessage(latitude, longitude))
+        const user = getUser(socket.id)
+        if (!user) {
+            return ack('User could not be found!')
+        }
+        io.to(user.room).emit('locationMessage', generateLocationMessage(user.name, latitude, longitude))
         ack()
     })
 
@@ -49,7 +57,7 @@ io.on('connection', (socket) => {
         const user = removeUser(socket.id)
 
         if (user) {
-            io.to(user.room).emit('message', generateMessage(`${user.name} has left!`))
+            io.to(user.room).emit('message', generateMessage('Admin', `${user.name} has left!`))
         }
     })
 })
