@@ -18,7 +18,7 @@ const addUser = ({ id, username, room }) => {
         }
     }
 
-    const user = { id, username, room }
+    const user = { id, name: username, room }
     users.push(user)
     return { user }
 }
@@ -26,7 +26,7 @@ const addUser = ({ id, username, room }) => {
 const removeUser = id => {
     const userIndex = users.findIndex(user => user.id === id)
     if (userIndex !== -1) {
-        return users.splice(index, 1)[0]
+        return users.splice(userIndex, 1)[0]
     }
 }
 
