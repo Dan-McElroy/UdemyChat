@@ -12,31 +12,27 @@ const locationMessageTemplate = document.querySelector('#location-message-templa
 socket.on('message', ({text, createdAt}) => {
     const html = Mustache.render(messageTemplate, {
         message: text,
-        createdAt: moment(createdAt).format('h:mma')
+        createdAt: formatTime(createdAt)
     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
 
-socket.on('locationMessage', (url) => {
-    const html = Mustache.render(locationMessageTemplate, { url })
+socket.on('locationMessage', ({url, createdAt}) => {
+    const html = Mustache.render(locationMessageTemplate, { 
+        url,
+        createdAt: formatTime(createdAt)
+     })
     $messages.insertAdjacentHTML('beforeend', html)
 })
-
-const disable = (element) => {
-    element.setAttribute('disabled', 'disabled')
-}
-const enable = (element) => {
-    element.removeAttribute('disabled')
-}
 
 $messageForm.addEventListener('submit', e => {
     e.preventDefault()
 
-    disable($messageButton)
+    disableElement($messageButton)
 
     const message = e.target.elements.message.value
     socket.emit('sendMessage', message, (error) => {
-        enable($messageButton)
+        enableElement($messageButton)
 
         $messageInput.value = ''
         $messageInput.focus()
@@ -48,7 +44,7 @@ $messageForm.addEventListener('submit', e => {
 })
 
 $locationButton.addEventListener('click', () => {
-    disable($locationButton)
+    disableElement($locationButton)
     
     if (!navigator.geolocation) {
         return alert('Geolocation is not supported by your browser.')
@@ -56,7 +52,7 @@ $locationButton.addEventListener('click', () => {
     navigator.geolocation.getCurrentPosition(position => {
         const { latitude, longitude } = position.coords
         socket.emit('sendLocation', latitude, longitude, () => {
-            enable($locationButton)
+            enableElement($locationButton)
             console.log('Location shared!')
         })
 
